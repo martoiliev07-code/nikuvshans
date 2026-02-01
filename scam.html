@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>GOLQMA GRESHKA</title>
+
+  <style>
+    :root { color-scheme: light; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+
+      /* brighter + pink theme */
+      background:
+        radial-gradient(900px 520px at 30% 20%, rgba(255, 105, 180, 0.35), transparent 60%),
+        radial-gradient(900px 520px at 70% 10%, rgba(255, 182, 193, 0.35), transparent 55%),
+        radial-gradient(1000px 700px at 50% 90%, rgba(255, 105, 180, 0.22), transparent 60%),
+        linear-gradient(180deg, #fff7fb, #ffe6f2 60%, #ffd6ea);
+    }
+
+    .card{
+      width:min(820px, 92vw);
+      border-radius:24px;
+      background: rgba(255,255,255,0.75);
+      border: 1px solid rgba(255, 105, 180, 0.25);
+      box-shadow: 0 22px 70px rgba(255, 105, 180, 0.18), 0 14px 40px rgba(0,0,0,0.10);
+      padding: 26px 22px 20px;
+      position: relative;
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .topGlow{
+      position:absolute;
+      inset:-40%;
+      background: conic-gradient(from 210deg,
+        rgba(255,105,180,0.0),
+        rgba(255,105,180,0.18),
+        rgba(255,182,193,0.0),
+        rgba(255,105,180,0.20),
+        rgba(255,105,180,0.0)
+      );
+      filter: blur(22px);
+      animation: spin 12s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    h1{
+      margin:0 0 8px;
+      font-size: clamp(26px, 4vw, 40px);
+      letter-spacing: 0.2px;
+      color:#2b0a1b;
+    }
+    p{
+      margin:0 0 18px;
+      font-size: 16px;
+      line-height: 1.5;
+      color: rgba(43, 10, 27, 0.78);
+    }
+
+    /* Image layout */
+    .imgGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 14px 0 18px;
+    }
+    @media (max-width: 720px){
+      .imgGrid{ grid-template-columns: 1fr; }
+    }
+
+    .imgBox{
+      border-radius: 18px;
+      overflow:hidden;
+      border: 1px solid rgba(255, 105, 180, 0.25);
+      background: rgba(255,255,255,0.65);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.10);
+      position: relative;
+    }
+    .imgBox img{
+      width:100%;
+      height: 260px;
+      object-fit: cover;
+      display:block;
+    }
+    @media (max-width: 720px){
+      .imgBox img{ height: 240px; }
+    }
+
+    .buttons{
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top: 6px;
+      position: relative;
+      min-height: 70px; /* gives room for No to move */
+    }
+
+    button{
+      border:0;
+      cursor:pointer;
+      padding: 14px 22px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 16px;
+      transition: transform 0.08s ease, filter 0.08s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active{ transform: scale(0.98); }
+
+    /* Yes: pink box */
+    #yesBtn{
+      background: linear-gradient(135deg, #ff4fa3, #ff85c2);
+      color: #ffffff;
+      min-width: 170px;
+      box-shadow: 0 14px 26px rgba(255, 79, 163, 0.24);
+    }
+
+    /* No: smaller box + runs away */
+    #noBtn{
+      background: rgba(43, 10, 27, 0.08);
+      color: #2b0a1b;
+      border: 1px solid rgba(43, 10, 27, 0.14);
+      min-width: 120px;
+      padding: 12px 18px;
+      position:absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      backdrop-filter: blur(6px);
+    }
+
+    .footer{
+      margin-top: 16px;
+      font-size: 13px;
+      color: rgba(43, 10, 27, 0.58);
+      text-align:center;
+    }
+
+    /* Modal */
+    .modal{
+      position: fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,0.45);
+      padding: 18px;
+    }
+    .modalContent{
+      width: min(540px, 92vw);
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(255, 105, 180, 0.30);
+      border-radius: 20px;
+      padding: 22px;
+      text-align:center;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+    }
+    .modalContent h2{
+      margin:0 0 8px;
+      color:#2b0a1b;
+    }
+    .modalContent p{
+      margin:0 0 14px;
+    }
+    .closeBtn{
+      background: rgba(255, 79, 163, 0.14);
+      border: 1px solid rgba(255, 79, 163, 0.28);
+      color:#2b0a1b;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card" id="card">
+    <div class="topGlow"></div>
+
+    <h1>Nikol, would you like to be my prom date?</h1>
+    <p>No pressure. Just vibes.</p>
+
+    <div class="imgGrid">
+      <div class="imgBox">
+        <img src="cats-hug.png" alt="Two cats hugging">
+      </div>
+      <div class="imgBox">
+        <img src="cats-kiss.jpg" alt="Two cats cuddling">
+      </div>
+    </div>
+
+    <div class="buttons" id="btnArea">
+      <button id="yesBtn">Yes</button>
+      <button id="noBtn" aria-label="No">No</button>
+    </div>
+
+    <div class="footer">Please just don't try to click “No”.</div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modalContent">
+      <h2>Deal 🤝</h2>
+      <p>Send me the details and I’ll handle the rest.</p>
+      <button class="closeBtn" id="closeBtn">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const card = document.getElementById("card");
+    const btnArea = document.getElementById("btnArea");
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const modal = document.getElementById("modal");
+    const closeBtn = document.getElementById("closeBtn");
+
+    placeNoButtonRandomly(true);
+
+    yesBtn.addEventListener("click", () => {
+      modal.style.display = "grid";
+    });
+
+    closeBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.style.display = "none";
+    });
+
+    // Desktop hover dodge
+    noBtn.addEventListener("mouseenter", () => placeNoButtonRandomly(false));
+
+    // Mobile tap dodge
+    noBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      placeNoButtonRandomly(false);
+      if (navigator.vibrate) navigator.vibrate(30);
+    });
+
+    // More "aggressive" dodge when pointer comes close
+    document.addEventListener("pointermove", (e) => {
+      const r = noBtn.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+      if (dist < 120) placeNoButtonRandomly(false);
+    }, { passive: true });
+
+    function placeNoButtonRandomly(isInitial) {
+      const areaRect = btnArea.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const pad = 8;
+      const minX = pad;
+      const maxX = areaRect.width - btnRect.width - pad;
+      const minY = pad;
+      const maxY = areaRect.height - btnRect.height - pad;
+
+      if (maxX <= minX || maxY <= minY) return;
+
+      let x = rand(minX, maxX);
+      let y = rand(minY, maxY);
+
+      if (!isInitial) {
+        const currentLeft = noBtn.offsetLeft;
+        const currentTop = noBtn.offsetTop;
+        let attempts = 0;
+
+        while (Math.hypot(x - currentLeft, y - currentTop) < 120 && attempts < 12) {
+          x = rand(minX, maxX);
+          y = rand(minY, maxY);
+          attempts++;
+        }
+      }
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+      noBtn.style.transform = "none";
+    }
+
+    function rand(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+  </script>
+</body>
+</html>
