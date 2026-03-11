@@ -14,8 +14,6 @@
       display:grid;
       place-items:center;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-
-      /* brighter + pink theme */
       background:
         radial-gradient(900px 520px at 30% 20%, rgba(255, 105, 180, 0.35), transparent 60%),
         radial-gradient(900px 520px at 70% 10%, rgba(255, 182, 193, 0.35), transparent 55%),
@@ -52,11 +50,13 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     h1{
-      margin:0 0 8px;
+      margin:0 0 16px;
       font-size: clamp(26px, 4vw, 40px);
       letter-spacing: 0.2px;
       color:#2b0a1b;
+      text-align: center;
     }
+
     p{
       margin:0 0 18px;
       font-size: 16px;
@@ -64,13 +64,13 @@
       color: rgba(43, 10, 27, 0.78);
     }
 
-    /* Image layout */
     .imgGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap: 14px;
       margin: 14px 0 18px;
     }
+
     @media (max-width: 720px){
       .imgGrid{ grid-template-columns: 1fr; }
     }
@@ -83,24 +83,26 @@
       box-shadow: 0 12px 28px rgba(0,0,0,0.10);
       position: relative;
     }
+
     .imgBox img{
       width:100%;
       height: 260px;
       object-fit: cover;
       display:block;
     }
+
     @media (max-width: 720px){
       .imgBox img{ height: 240px; }
     }
 
     .buttons{
       display:flex;
-      gap:14px;
       justify-content:center;
-      flex-wrap:wrap;
+      align-items:center;
+      gap:18px;
       margin-top: 6px;
       position: relative;
-      min-height: 70px; /* gives room for No to move */
+      min-height: 90px;
     }
 
     button{
@@ -114,28 +116,30 @@
       user-select:none;
       -webkit-tap-highlight-color: transparent;
     }
+
     button:active{ transform: scale(0.98); }
 
-    /* Yes: pink box */
     #yesBtn{
       background: linear-gradient(135deg, #ff4fa3, #ff85c2);
       color: #ffffff;
       min-width: 170px;
       box-shadow: 0 14px 26px rgba(255, 79, 163, 0.24);
+      position: relative;
+      z-index: 2;
     }
 
-    /* No: smaller box + runs away */
     #noBtn{
       background: rgba(43, 10, 27, 0.08);
       color: #2b0a1b;
       border: 1px solid rgba(43, 10, 27, 0.14);
       min-width: 120px;
       padding: 12px 18px;
-      position:absolute;
-      left: 50%;
+      position: absolute;
+      left: calc(50% + 120px);
       top: 50%;
-      transform: translate(-50%, -50%);
+      transform: translateY(-50%);
       backdrop-filter: blur(6px);
+      z-index: 2;
     }
 
     .footer{
@@ -145,7 +149,6 @@
       text-align:center;
     }
 
-    /* Modal */
     .modal{
       position: fixed;
       inset:0;
@@ -153,7 +156,9 @@
       place-items:center;
       background: rgba(0,0,0,0.45);
       padding: 18px;
+      z-index: 50;
     }
+
     .modalContent{
       width: min(540px, 92vw);
       background: rgba(255,255,255,0.88);
@@ -163,13 +168,28 @@
       text-align:center;
       box-shadow: 0 24px 80px rgba(0,0,0,0.25);
     }
+
     .modalContent h2{
       margin:0 0 8px;
       color:#2b0a1b;
     }
+
     .modalContent p{
       margin:0 0 14px;
     }
+
+    .modalImage{
+      width: 100%;
+      max-width: 320px;
+      height: auto;
+      display: block;
+      margin: 0 auto 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 105, 180, 0.25);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+      object-fit: cover;
+    }
+
     .closeBtn{
       background: rgba(255, 79, 163, 0.14);
       border: 1px solid rgba(255, 79, 163, 0.28);
@@ -186,7 +206,6 @@
     <div class="topGlow"></div>
 
     <h1>Nikol, would you like to be my prom date?</h1>
-    <p>No pressure. Just vibes.</p>
 
     <div class="imgGrid">
       <div class="imgBox">
@@ -207,21 +226,18 @@
 
   <div class="modal" id="modal">
     <div class="modalContent">
-      <h2>Deal 🤝</h2>
-      <p>Send me the details and I’ll handle the rest.</p>
+      <h2>OPAAA🙃</h2>
+      <img src="image0.jpg" alt="Special image" class="modalImage">
       <button class="closeBtn" id="closeBtn">Close</button>
     </div>
   </div>
 
   <script>
-    const card = document.getElementById("card");
     const btnArea = document.getElementById("btnArea");
     const noBtn = document.getElementById("noBtn");
     const yesBtn = document.getElementById("yesBtn");
     const modal = document.getElementById("modal");
     const closeBtn = document.getElementById("closeBtn");
-
-    placeNoButtonRandomly(true);
 
     yesBtn.addEventListener("click", () => {
       modal.style.display = "grid";
@@ -235,51 +251,58 @@
       if (e.target === modal) modal.style.display = "none";
     });
 
-    // Desktop hover dodge
-    noBtn.addEventListener("mouseenter", () => placeNoButtonRandomly(false));
+    noBtn.addEventListener("mouseenter", () => moveNoButton());
 
-    // Mobile tap dodge
     noBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      placeNoButtonRandomly(false);
+      moveNoButton();
       if (navigator.vibrate) navigator.vibrate(30);
     });
 
-    // More "aggressive" dodge when pointer comes close
     document.addEventListener("pointermove", (e) => {
       const r = noBtn.getBoundingClientRect();
       const cx = r.left + r.width / 2;
       const cy = r.top + r.height / 2;
       const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
-      if (dist < 120) placeNoButtonRandomly(false);
+
+      if (dist < 110) {
+        moveNoButton();
+      }
     }, { passive: true });
 
-    function placeNoButtonRandomly(isInitial) {
+    function moveNoButton() {
       const areaRect = btnArea.getBoundingClientRect();
-      const btnRect = noBtn.getBoundingClientRect();
+      const noRect = noBtn.getBoundingClientRect();
+      const yesRect = yesBtn.getBoundingClientRect();
 
       const pad = 8;
+
       const minX = pad;
-      const maxX = areaRect.width - btnRect.width - pad;
+      const maxX = areaRect.width - noRect.width - pad;
       const minY = pad;
-      const maxY = areaRect.height - btnRect.height - pad;
+      const maxY = areaRect.height - noRect.height - pad;
 
       if (maxX <= minX || maxY <= minY) return;
 
-      let x = rand(minX, maxX);
-      let y = rand(minY, maxY);
+      const yesLeft = yesBtn.offsetLeft - 20;
+      const yesRight = yesBtn.offsetLeft + yesBtn.offsetWidth + 20;
+      const yesTop = yesBtn.offsetTop - 12;
+      const yesBottom = yesBtn.offsetTop + yesBtn.offsetHeight + 12;
 
-      if (!isInitial) {
-        const currentLeft = noBtn.offsetLeft;
-        const currentTop = noBtn.offsetTop;
-        let attempts = 0;
+      let x, y;
+      let attempts = 0;
 
-        while (Math.hypot(x - currentLeft, y - currentTop) < 120 && attempts < 12) {
-          x = rand(minX, maxX);
-          y = rand(minY, maxY);
-          attempts++;
-        }
-      }
+      do {
+        x = rand(minX, maxX);
+        y = rand(minY, maxY);
+        attempts++;
+      } while (
+        x + noBtn.offsetWidth > yesLeft &&
+        x < yesRight &&
+        y + noBtn.offsetHeight > yesTop &&
+        y < yesBottom &&
+        attempts < 50
+      );
 
       noBtn.style.left = x + "px";
       noBtn.style.top = y + "px";
